@@ -7,7 +7,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN mkdir /install
 ADD ./install/setup.sh /install
 ADD ./install/setup.conf /install
-ADD ./install/gen_client_cert.sh /install
 
 WORKDIR /install
 

@@ -133,15 +133,6 @@ function init_client_configs() {
     echo "# up /etc/openvpn/update-resolv-conf" >> base.conf
     echo "# down /etc/openvpn/update-resolv-conf" >> base.conf
 
-    echo "::: Creating client generation script..."
-    if [[ -f gen_client_cert.sh ]];then
-        echo "::: Cleaning up old script"
-        rm gen_client_cert.sh
-    fi
-
-    touch gen_client_cert.sh
-    chmod +x gen_client_cert.sh
-    cat $WORKDIR/gen_client_cert.sh > gen_client_cert.sh
 }
 
 function help() {
@@ -185,9 +176,15 @@ function main() {
             exit 1
         fi
 
-        echo "::: Installing OpenVPN packages..."
+        echo "::: Starting installion..."
+        echo "::: Updating packages..."
         apt-get update -qq
-        apt-get install -qq -y openvpn wget expect
+        echo "::: Installing wget..."
+        apt-get install -qq -y wget
+        echo "::: Installing expect..."
+        apt-get install -qq -y expect
+        echo "::: Installing openvpn..."
+        apt-get install -qq -y openvpn
 
         download_easy_rsa
 
