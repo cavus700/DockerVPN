@@ -59,6 +59,10 @@ function generate_client_cert() {
         echo "::: Error: There is already a certificate for: $1"
         exit 1
     fi
+    if [[ -f "$EASY_RSA_CA/pki/reqs/$1.req" ]];then
+        echo "::: Can not create certificate for $1. Name was already choosen in the past."
+        exit 1
+    fi
 
     echo "::: Generating client cert..."
     cd $EASY_RSA_SRV
