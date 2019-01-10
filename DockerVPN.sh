@@ -58,7 +58,7 @@ function check_running() {
 }
 
 function install_image() {
-    local msg="Do you want to install the DockerVPN image?\n\nThis can take a while depending on you internet connection and your selected key size."
+    local msg="Do you want to install the DockerVPN image?\n\nThis can take a long time depending on your internet connection and your selected key size ($VPN_KEYSIZE)."
     if (whiptail --title "DockerVPN installation" --yesno "$msg" ${SCREEN_HEIGHT} ${SCREEN_WIDTH}); then
         LOG=$(docker build -t $DOCKER_IMG_NAME .)
         EXIT=$?

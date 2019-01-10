@@ -93,7 +93,7 @@ EOF
         <(echo -e '<ca>') \
         ${KEY_DIR}/ca.crt \
         <(echo -e '</ca>\n<cert>') \
-        ${KEY_DIR}/${1}.crt \
+        sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' < ${KEY_DIR}/${1}.crt \
         <(echo -e '</cert>\n<key>') \
         ${KEY_DIR}/${1}.key \
         <(echo -e '</key>\n<tls-auth>') \
@@ -171,10 +171,10 @@ function init_client_configs() {
     sed -i 's/;group nogroup/group nogroup/g' base.conf
 
     sed -i 's/ca\s*ca.crt/#ca ca.crt/g' base.conf
-    sed -i 's/cert\s*client.cert/#cert client.cert/g' base.conf
-    sed -i 's/key\s*client.cert/#key client.cert/g' base.conf
+    sed -i 's/cert\s*client.crt/#cert client.crt/g' base.conf
+    sed -i 's/key\s*client.key/#key client.key/g' base.conf
 
-    sed -i 's/#tls-auth\s*ta.key\s*1/tls-auth ta.key 1/g' base.conf
+    #sed -i 's/#tls-auth\s*ta.key\s*1/tls-auth ta.key 1/g' base.conf
 
     awk '/cipher AES-256-CBC/ { print; print "auth SHA256"; next }1' base.conf > base.tmp.conf
     rm base.conf
