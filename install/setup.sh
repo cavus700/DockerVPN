@@ -253,7 +253,7 @@ function main() {
         echo "::: Installing wget..."
         apt-get install -qq -y wget
         echo "::: Installing expect..."
-        #apt-get install -qq -y expect
+        apt-get install -qq -y expect
         echo "::: Installing openvpn..."
         apt-get install -qq -y openvpn
 
