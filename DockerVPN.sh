@@ -7,6 +7,8 @@ INSTALL_LOG=DockerVPN.log
 
 UNSAVED_CHANGES=false
 
+NO_LOGGING=false
+
 function die() {
     log "::: Exiting with code: $1"
     log ""
@@ -22,6 +24,7 @@ function die() {
 }
 
 function log() {
+    [[ $NO_LOGGING == true ]] && return 0
     [[ $# == 0 ]] && while read data; do echo "$data" >> $INSTALL_LOG; done || echo $@ >> $INSTALL_LOG
 }
 
@@ -166,6 +169,13 @@ function clean_up() {
 }
 
 function main(){
+
+    if [[ $1 == "--run-only" ]];then
+        NO_LOGGING=true
+        start_container
+        exit 0
+    fi
+
     datum=$(date +'%Y.%m.%d-%H:%M')
     log "   ########################"
     log "   ###" $datum "###"
