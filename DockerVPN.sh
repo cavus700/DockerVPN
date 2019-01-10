@@ -82,6 +82,13 @@ function start_container() {
 }
 
 function stop_container() {
+    if [[ $UNSAVED_CHANGES == true ]];then
+         if (whiptail --title "DockerVPN Changes" --yesno "You have unsaved changes. Save them before you leave?\nYou can save it later but make sure to do it before you restart the container." ${SCREEN_HEIGHT} ${SCREEN_WIDTH}); then
+             save_changes
+         else
+             UNSAVED_CHANGES=false
+         fi
+    fi
     LOG=$(docker container stop $DOCKER_CONT_NAME)
     EXIT=$?
     log $LOG

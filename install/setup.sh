@@ -93,7 +93,7 @@ EOF
         <(echo -e '<ca>') \
         ${KEY_DIR}/ca.crt \
         <(echo -e '</ca>\n<cert>') \
-        sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' < ${KEY_DIR}/${1}.crt \
+        <(sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' < ${KEY_DIR}/${1}.crt) \
         <(echo -e '</cert>\n<key>') \
         ${KEY_DIR}/${1}.key \
         <(echo -e '</key>\n<tls-auth>') \
