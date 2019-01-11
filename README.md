@@ -5,7 +5,7 @@ Automatically host an OpenVPN server inside a docker container based on Debian 9
 ## Requirements
 
 - Docker
-Make sure you have docker installed and accessible from the command line. To test it open a terminal and write 'docker -v' otherwise have a look at the [Docker installation] (https://docs.docker.com/v17.12/install/) 
+Make sure you have docker installed and accessible from the command line. To test it open a terminal and write 'docker -v' otherwise have a look at the [Docker installation](https://docs.docker.com/v17.12/install/) 
 
 ## Installation
 
@@ -29,9 +29,9 @@ Make sure you have docker installed and accessible from the command line. To tes
 4. Run './DockerVPN.sh' it will guide you through the installation.
 
 ## Supported OS
-I have only tested it on **Debain 9 (stretch)** but it shouldn't be a problem to run it on other linux distributions as long as you have a working docker installation, the [whiptail package] (https://en.wikibooks.org/wiki/Bash_Shell_Scripting/Whiptail) and the */den/net/tun* device. It is mapped inside the docker container because it is required by OpenVPN.
+I have only tested it on **Debain 9 (stretch)** but it shouldn't be a problem to run it on other linux distributions as long as you have a working docker installation, the [whiptail package](https://en.wikibooks.org/wiki/Bash_Shell_Scripting/Whiptail) and the */den/net/tun* device. It is mapped inside the docker container because it is required by OpenVPN.
 
-For an installtion on **Winodws** you can have a look at [this] (https://openvpn.net/community-resources/the-standard-install-file-included-in-the-source-distribution/) to install the TUN driver and you have to run the docker commands manually.
+For an installtion on **Winodws** you can have a look at [this](https://openvpn.net/community-resources/the-standard-install-file-included-in-the-source-distribution/) to install the TUN driver and you have to run the docker commands manually.
 
 ## Docker Commands
 - Exchange the variables by the values from your *setup.conf*
