@@ -174,7 +174,7 @@ function init_client_configs() {
     sed -i 's/cert\s*client.crt/#cert client.crt/g' base.conf
     sed -i 's/key\s*client.key/#key client.key/g' base.conf
 
-    #sed -i 's/#tls-auth\s*ta.key\s*1/tls-auth ta.key 1/g' base.conf
+    sed -i 's/tls-auth\s*ta.key\s*1/#tls-auth ta.key 1/g' base.conf
 
     awk '/cipher AES-256-CBC/ { print; print "auth SHA256"; next }1' base.conf > base.tmp.conf
     rm base.conf
