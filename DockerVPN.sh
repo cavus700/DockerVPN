@@ -25,7 +25,11 @@ function die() {
 
 function log() {
     [[ $NO_LOGGING == true ]] && return 0
-    [[ $# == 0 ]] && while read data; do echo "$data" >> $INSTALL_LOG; done || echo $@ >> $INSTALL_LOG
+    [[ $# == 0 ]] && while read data; do
+                         echo "$data" >> $INSTALL_LOG
+                         echo "$data"
+                     done ||
+                     echo "$@" >> $INSTALL_LOG && echo "$@"
 }
 
 function init_whiptail() {
@@ -126,7 +130,7 @@ function create_client() {
         fi
     fi
 
-    [[ -n $PASSWORD ]] && LOG=$(docker exec $DOCKER_CONT_NAME ./setup.sh -c -n=$USER -p=$PASSWORD1) || LOG=$(docker exec $DOCKER_CONT_NAME ./setup.sh -c -n=$USER)
+    [[ -n $PASSWORD1 ]] && LOG=$(docker exec $DOCKER_CONT_NAME ./setup.sh -c -n=$USER -p=$PASSWORD1) || LOG=$(docker exec $DOCKER_CONT_NAME ./setup.sh -c -n=$USER)
 
     EXIT=$?
     log $LOG
@@ -167,9 +171,10 @@ function save_changes() {
 }
 
 function clean_up() {
-    if (whiptail --title "DockerVPN installation" --yesno "Do you really want to delete your container and the image?" ${SCREEN_HEIGHT} ${SCREEN_WIDTH});then
+    if (whiptail --title "DockerVPN installation" --yesno "Do you really want to delete your container,the image and all ovpn files?" ${SCREEN_HEIGHT} ${SCREEN_WIDTH});then
         LOG=$(docker container rm -f $DOCKER_CONT_NAME)
         LOG+=$(docker image rm -f $DOCKER_IMG_NAME)
+        LOG+=$(rm ovpn/*.ovpn)
         log $LOG
         die 0
     fi

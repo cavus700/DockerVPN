@@ -16,7 +16,7 @@ function download_easy_rsa() {
     if [[ ! -d ${INSTALL_TMP} ]]; then
         mkdir -p $INSTALL_TMP
     fi
-    echo "::: Download easy-rsa version $EASY_RSA_VER"
+    echo -e "\n::: Download easy-rsa version $EASY_RSA_VER"
     wget -q -P $INSTALL_TMP "https://github.com/OpenVPN/easy-rsa/releases/download/v$EASY_RSA_VER/EasyRSA-$EASY_RSA_VER.tgz"
     cd $INSTALL_TMP
     tar xf EasyRSA-$EASY_RSA_VER.tgz
@@ -60,15 +60,17 @@ function generate_client_cert() {
         exit 1
     fi
     if [[ -f "$EASY_RSA_CA/pki/reqs/$1.req" ]];then
-        echo "::: Can not create certificate for $1. Name was already choosen in the past."
+        echo -e "\n::: Can not create certificate for $1. Name was already choosen in the past."
         exit 1
     fi
 
-    echo "::: Generating client cert..."
+    echo -e "\n::: Generating client cert..."
     cd $EASY_RSA_SRV
     if [[ $# == 1 ]];then
+        echo -e "\n::: Generating without password"
         ./easyrsa gen-req $1 nopass batch
     else
+        echo -e "\n::: Generating with password"
         expect << EOF
         set timeout -1
         spawn ./easyrsa gen-req $1 batch
@@ -85,9 +87,9 @@ EOF
     ./easyrsa sign-req client $1
     cp pki/issued/$1.crt $KEY_DIR
 
-    echo "::: Generation successfull!"
+    echo -e "\n::: Generation successfull!"
 
-    echo "::: Generating .ovpn file for $1"
+    echo -e "\n::: Generating .ovpn file for $1"
 
     cat ${BASE_CONFIG} \
         <(echo -e '<ca>') \
@@ -105,26 +107,26 @@ EOF
     sed -i 's/;.*//g' ${OUTPUT_DIR}/${1}.ovpn
     sed -i '/^[[:space:]]*$/d' ${OUTPUT_DIR}/${1}.ovpn
 
-    echo "::: Generation complete!"
+    echo -e "\n::: Generation complete!"
 }
 
 function revoke_client_cert() {
     cd $EASY_RSA_CA
 
     if [[ ! -n $1 ]];then
-        echo "::: Error: No name provided to revoke certificate."
+        echo -e "\n::: Error: No name provided to revoke certificate."
         help
         exit 1
     fi
 
     if [[ ! -f pki/issued/$1.crt ]];then
-        echo "::: Error No certificate found for: $1"
+        echo -e "\n::: Error No certificate found for: $1"
         exit 1
     fi
-    echo "::: Revoking certificate for $1..."
+    echo -e "\n::: Revoking certificate for $1..."
     cd $EASY_RSA_CA
     ./easyrsa --batch revoke $1
-    echo "::: Updating crl file..."
+    echo -e "\n::: Updating crl file..."
     ./easyrsa gen-crl
 
     rm -rf $KEY_DIR/$1.*
@@ -134,13 +136,13 @@ function revoke_client_cert() {
     rm -rf "$OUTPUT_DIR/$1.ovpn"
     cp pki/crl.pem /etc/openvpn/crl.pem
 
-    echo "::: Finished! Restart your server to apply changes."
+    echo -e "\n::: Finished! Restart your server to apply changes."
 }
 
 function list_client_certs() {
     cd $KEY_DIR
-    echo "::: Active certificates for clients :::"
-    echo "---------------------------------------"
+    echo -e "\n::: Active certificates for clients :::"
+    echo -e "\n---------------------------------------"
     CLIENTS=()
     for entry in *.key
     do
@@ -149,7 +151,7 @@ function list_client_certs() {
             echo "$file"
         fi
     done
-    echo "---------------------------------------"
+    echo "\n---------------------------------------"
 }
 
 function init_client_configs() {
@@ -158,10 +160,10 @@ function init_client_configs() {
     cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf $DIR_CLIENT_CERT/base.conf
     cd $DIR_CLIENT_CERT
 
-    echo "::: Setting server and port for client to ${VPN_DNS}:${VPN_PORT}"
+    echo -e "\n::: Setting server and port for client to ${VPN_DNS}:${VPN_PORT}"
     sed -i "s/remote.*1194/remote ${VPN_DNS} ${VPN_PORT}/" base.conf
 
-    echo "::: Setting client protocol to ${VPN_PROTO}"
+    echo -e "\n::: Setting client protocol to ${VPN_PROTO}"
     if [[ ${VPN_PROTO} == tcp ]];then
         sed -i 's/proto udp/;proto udp/g' base.conf
         sed -i 's/;proto tcp/proto tcp/g' base.conf
@@ -247,20 +249,20 @@ function main() {
             exit 1
         fi
 
-        echo "::: Starting installion..."
-        echo "::: Updating packages..."
+        echo -e "\n::: Starting installion..."
+        echo -e "\n::: Updating packages..."
         apt-get update -qq
-        echo "::: Installing wget..."
+        echo -e "\n::: Installing wget..."
         apt-get install -qq -y wget
-        echo "::: Installing expect..."
+        echo -e "\n::: Installing expect..."
         apt-get install -qq -y expect
-        echo "::: Installing openvpn..."
+        echo -e "\n::: Installing openvpn..."
         apt-get install -qq -y openvpn
 
         download_easy_rsa
 
 
-        echo "::: Initialise the ca host"
+        echo -e "\n::: Initialise the ca host"
         cd $EASY_RSA_CA
 
         cp vars.example vars
@@ -275,32 +277,32 @@ function main() {
 
         ./easyrsa init-pki
 
-        echo "::: Creating certificate on ca host..."
+        echo -e "\n::: Creating certificate on ca host..."
         ./easyrsa build-ca nopass
 
 
-        echo "::: Initialize the server"
+        echo -e "\n::: Initialize the server"
         cd $EASY_RSA_SRV
         ./easyrsa init-pki
 
-        echo "::: Generating server keys"
+        echo -e "\n::: Generating server keys"
         ./easyrsa gen-req $HOST_NAME nopass batch
         #openssl version
         #openssl req -utf8 -new -newkey rsa:$VPN_KEYSIZE -keyout "$EASY_RSA_SRV/pki/private/$HOST_NAME.key" -out "$EASY_RSA_SRV/pki/reqs/$HOST_NAME.req" -batch -verbose
 
-        echo "::: Copy server key"
+        echo -e "\n::: Copy server key"
         cp pki/private/$HOST_NAME.key /etc/openvpn
 
-        echo "::: Importing and signing certificate"
+        echo -e "\n::: Importing and signing certificate"
         cd $EASY_RSA_CA
         ./easyrsa import-req $EASY_RSA_SRV/pki/reqs/$HOST_NAME.req $HOST_NAME
         ./easyrsa sign-req server $HOST_NAME
 
-        echo "::: Copy certificate to OpenVPN"
+        echo -e "\n::: Copy certificate to OpenVPN"
         cp pki/issued/$HOST_NAME.crt /etc/openvpn
         cp pki/ca.crt /etc/openvpn
 
-        echo "::: Generating key with size $VPN_KEYSIZE. This can take a while."
+        echo -e "\n::: Generating key with size $VPN_KEYSIZE. This can take a while."
         cd $EASY_RSA_SRV
         ./easyrsa --keysize=$VPN_KEYSIZE gen-dh
         openvpn --genkey --secret ta.key
@@ -346,7 +348,7 @@ function main() {
 
         #Check for porotocol change
         if [[ ${VPN_PROTO} == udp ]];then
-            echo "::: Use default udp protocol"
+            echo -e "\n::: Use default udp protocol"
         else
             sed -i 's/proto udp/;proto udp/g' server.conf
             sed -i 's/;proto tcp/proto tcp/g' server.conf
@@ -378,20 +380,19 @@ function main() {
         done
 
         if [[ ${NAME} == false ]];then
-            echo ":::Error: You have to provide a username."
+            echo -e "\n:::Error: You have to provide a username."
             help
             exit 1
         else
             if [[ ${PASS} == false ]];then
-                echo "::: Generating client certificate without a password."
                 generate_client_cert $NAME
             elif [[ ${#PASS} -lt 6 || ${#PASS} -gt 1000 ]];then
-                echo "::: Error: Your password must contain between 6 and 1000 characters."
+                echo -e "\n::: Error: Your password must contain between 6 and 1000 characters."
                 exit 1
             else
                 #Escape chars in PASS
                 PASS=$(echo -n ${PASS} | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/\$/\\\$/g' -e 's/!/\\!/g' -e 's/\./\\\./g' -e "s/'/\\\'/g" -e 's/"/\\"/g' -e 's/\*/\\\*/g' -e 's/\@/\\\@/g' -e 's/\#/\\\#/g' -e 's/£/\\£/g' -e 's/%/\\%/g' -e 's/\^/\\\^/g' -e 's/\&/\\\&/g' -e 's/(/\\(/g' -e 's/)/\\)/g' -e 's/-/\\-/g' -e 's/_/\\_/g' -e 's/\+/\\\+/g' -e 's/=/\\=/g' -e 's/\[/\\\[/g' -e 's/\]/\\\]/g' -e 's/;/\\;/g' -e 's/:/\\:/g' -e 's/|/\\|/g' -e 's/</\\</g' -e 's/>/\\>/g' -e 's/,/\\,/g' -e 's/?/\\?/g' -e 's/~/\\~/g' -e 's/{/\\{/g' -e 's/}/\\}/g')
-
+                echo -e "\n::: Generate with password: ${PASS}"
                 generate_client_cert $NAME $PASS
             fi
         fi
@@ -399,7 +400,7 @@ function main() {
 
     if [[ ${REV_CLIENT} == true ]];then
         if [[ ! -n $2 ]];then
-            echo "Error: No name provided for client revocation."
+            echo -e "\nError: No name provided for client revocation."
             exit 1
         fi
 
