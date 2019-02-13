@@ -206,7 +206,7 @@ function main(){
 
     while true; do
         local menu_msg="Please choose an option from the menu below:"
-        CHOICE=$(whiptail --title "DockerVPN Menu" --menu "$(get_msg $menu_msg)" ${SCREEN_HEIGHT} ${SCREEN_WIDTH} 16 \
+        CHOICE=$(whiptail --title "DockerVPN Menu" --menu "$(get_msg $menu_msg)" ${SCREEN_HEIGHT} ${SCREEN_WIDTH} 10 \
             "1)" "Start container." \
             "2)" "Stop container." \
             "3)" "Create client certificate." \
