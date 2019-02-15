@@ -24,8 +24,9 @@ Make sure you have docker installed and accessible from the command line. To tes
     - VPN_PROTO=udp (udp:Default choice. tcp:Implemented but not testes. Use **lowercase** for this option)
     - VPN_PORT=1194 (The port for your OpenVPN inside the container and your host)
     - VPN_DNS=DVPNHOST (DNS of your docker host or a static ip)
-  - You can change the other option as well but it is not recommended and tested.
-3. Make sure you have execution right for the DockerVPN.sh or give it the rights `chmod +x <USER>:<USER> DockerVPN.sh`
+    - TLS_MIN_VER=1.2 (Min version of tls for client and server side)
+  - You can change the other options as well but it is not recommended and tested.
+3. Make sure you have the execution right for the DockerVPN.sh or give it the rights `chmod +x <USER>:<USER> DockerVPN.sh`
 4. Run `./DockerVPN.sh` it will guide you through the installation.
 
 ## Supported OS
