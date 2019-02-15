@@ -174,7 +174,7 @@ function clean_up() {
     if (whiptail --title "DockerVPN installation" --yesno "Do you really want to delete your container,the image and all ovpn files?" ${SCREEN_HEIGHT} ${SCREEN_WIDTH});then
         LOG=$(docker container rm -f $DOCKER_CONT_NAME)
         LOG+=$(docker image rm -f $DOCKER_IMG_NAME)
-        LOG+=$(rm ovpn/*.ovpn)
+        LOG+=$(sudo rm ovpn/*.ovpn)
         log $LOG
         die 0
     fi

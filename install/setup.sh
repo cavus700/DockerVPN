@@ -176,8 +176,12 @@ function init_client_configs() {
     sed -i 's/cert\s*client.crt/#cert client.crt/g' base.conf
     sed -i 's/key\s*client.key/#key client.key/g' base.conf
 
+    #First method to add a line
+    sed -i "s/tls-auth\s*ta.key/tls-version-min ${TLS_MIN_VER}\n&/" base.conf
+
     sed -i 's/tls-auth\s*ta.key\s*1/#tls-auth ta.key 1/g' base.conf
 
+    #Second method to add a line
     awk '/cipher AES-256-CBC/ { print; print "auth SHA256"; next }1' base.conf > base.tmp.conf
     rm base.conf
     mv base.tmp.conf base.conf
@@ -322,6 +326,8 @@ function main() {
         awk '/tls-auth/ { print; print "key-direction 0"; next }1' server.conf > server.tmp.conf
         rm server.conf
         mv server.tmp.conf server.conf
+
+        sed -i "s/tls-auth/tls-version-min ${TLS_MIN_VER}\n&/" server.conf
 
         awk '/cipher AES-256-CBC/ { print; print "auth SHA256"; next }1' server.conf > server.tmp.conf
         rm server.conf
