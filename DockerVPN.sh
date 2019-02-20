@@ -183,6 +183,7 @@ function clean_up() {
 function main(){
 
     if [[ $1 == "--run-only" ]];then
+        source ${SETUP_CONF}
         NO_LOGGING=true
         start_container
         exit 0
